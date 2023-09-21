@@ -137,7 +137,33 @@ Java基础
          
          ```
 
-         
+2. ## Java注解
+
+   1. 参考文档：[java注解-最通俗易懂的讲解 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/37701743)
+
+   2. 个人理解：
+      java注解的出现只是为了辅助编译器去执行相关功能，它的存在对被注解的类型数据并无影响。
+
+      java注解中有五个元注解，元注解就是给注解提供注解的注解，也就是用来修饰注解的。
+
+      注解的关键字使用@interface修饰，它只有成员变量，没有方法（虽然它的书写方式也没有形参的方法类似），在使用时只需要@注解名(属性：值)。代码示例：
+
+      ```java
+      @Retention(RetentionPolicy.RUNTIME)
+      public @interface Test {
+          String v() default "";//使用default指定默认值
+          String[] name() default "";
+          Class<Object> target() ;
+      }
+      //使用
+      @MyTest(v = "name",name = {"",""},target = MyTest.class)
+          public void testMethod(){
+              
+          }
+      
+      ```
+
+   3. 实现原理：总体是java反射机制，通过方法 **isAnnotationPresent(Class<? extends Annotation> annotationClass)**判断类是否存在注解，再通过反射获取到该注解示例，最后获取到该成员变量的值。
 
    
 
