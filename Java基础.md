@@ -211,9 +211,9 @@ Java基础
 
    1. 个人理解
 
-      java反射是java成为动态语言的一个重要表现；再类加载完成之后，会在内存中生成一个Class类型的变量，这个变量记录了一个类的全部信息，也就是可以通过它得到该类的所用属性与方法；其整个过程就类似再照镜子一样，所以就称为 反射；
+      java反射是java成为动态语言的一个重要表现；再类加载完成之后，会在堆内存的方法区中生成一个Class类型的变量，这个变量记录了一个类的全部信息，也就是可以通过它得到该类的所用属性与方法；由于其整个过程就类似再照镜子一样，所以就称为反射；
 
-      Class类型是实现的关键；来源：程序再执行javax.exe命令后，会生成一个或多个字节码文件(.class)，再运行时，把这些字节码文件加载到内存中；这个时候，加载到内存中的类就叫运行时类，次类作为一个Class的一个示例；
+      Class类型是实现的关键；来源：程序再执行javax.exe命令后，会生成一个或多个字节码文件(.class)，再通过java.exe运行时，JVM会把这些字节码文件加载到内存中；这个时候，加载到内存中的类就叫运行时类，次类作为一个Class的一个实列；
 
       每一个字节码文件(.class)就对应一个`Class`类型的对象；每个类都会记得自己是那个Class类型生成的；一个加载的类在 `JVM`中只会有一个`Class`实例；
 
@@ -221,6 +221,64 @@ Java基础
 
       1. 参考：[Java-反射机制（超详解）_java反射机制-CSDN博客](https://blog.csdn.net/weixin_52533007/article/details/123312217)
 
-   
+5. Java多线程
 
+   1. 基本概念
+      并发：一个对象（进程）被多个线程操作
+      并行：多个进程（任务）同时进行
+      串行：一个一个任务进行，就跟排队一样
+   
+   2. 进程三态：
+      就绪 ：当进程获取出CPU外所有的资源后，只要再获得CPU就能执行程序，这时的状态叫做就绪态。在一个系统中处于就绪态的进程会有多个，通常把这些排成一个队列，这个就叫就绪队列。
+   
+      运行：当进程已获得CPU操作权限，正在运行，这个时间就是运行态。在单核系统中，同一个时间只能有一个运行态，多核系统中，会有多个运行态。
+   
+      阻塞：正在执行的进程，等待某个事件而无法继续运行时，便被系统剥夺了CPU的操作权限，这时就是阻塞态。引起阻塞的原因有很多，比如：等待I/O操作、被更高的优先级的进程剥夺了CPU权限等。
+   
+   3. 多线程并发实现方式
+   
+      1. 主要实现是Runnalbe和Callable接口，再创建Tread对象，开启线程；
+   
+         ```java
+          private void test1(){
+                 //使用thread开辟一条线程
+                 //start()方法会调用TestClass.run()
+                 new Thread(new TestClass()).start();
+             }
+             class TestClass implements Runnable{
+                 @Override
+                 public void run() {
+         			System.out.println("Run()运行！");
+                 }
+             }
+         ```
+   
+         说明：Callable接口会有返回值；
+   
+      2.通过线程池创建
+   
+      ​	通过线程池可以提高线程利用率，不用每次都开辟一条新的线程；
+   
+      ```java
+      private void test1() throws ExecutionException, InterruptedException {
+              //Executors可以创建线程池 并初始化线程个数 调用submit执行
+              ExecutorService service = Executors.newFixedThreadPool(3);
+              Future<?> submit = service.submit(new TestClass());
+              //生成的future对象可以返回结果(如实现了Callable接口的对象)
+              Object o = submit.get();
+          }
+          class TestClass implements Callable<Object>{
+              @Override
+              public Object call() throws Exception {
+                  return null;
+              }
+          }
+      ```
+   
+   4. 线程安全问题
+      多线程并发，必然会出现线程安全问题，也就是同一个对象再不同线程操作之后另一个线程并不知晓，就是使用原数据导致结果不如愿；因此就引入了线程锁这一方法；
+      参考：[JAVA多线程详解（超详细）-CSDN博客](https://blog.csdn.net/qq_29141913/article/details/125964815?spm=1001.2014.3001.5506)
+   
+   
+   
    
