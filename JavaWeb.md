@@ -3,7 +3,9 @@
 1. 网关
    1. 概念：也叫协议转换器或者网间转换器，仅用于两个高层协议不同的网络互联
 
-2. HTTP(S)协议
+2. JavaWeb三大组件：servlet，filter，listener；
+
+3. HTTP(S)协议
 
    1. 个人理解：
       HTTP名为超文本传输协议；顾名思义，它是用来传输数据的，并且不单纯可以传输文本，还可以传输许多媒体文件；
@@ -66,7 +68,7 @@
       </html>
       ```
 
-3. 重定向与转发
+4. 重定向与转发
 
    1. 转发：当浏览器发起请求到服务器的某个Servlet（该Servlet解析后，发现这个请求是另一个Servlet处理的，客户端发错了），该Servlet再将该请求发送给服务器的应一个Servlet处理并返回数据给客户端；
 
@@ -88,7 +90,7 @@
 
       
 
-4. 会话机制
+5. 会话机制
 
    1. 会话：
       个人理解：HTTP本身是一个无状态的请求，为了弥补这个问题，就引入了会话机制，用来记录用户的状态；会话就是**一个客户端从访问某个服务器的一个或多个web资源到客户端关闭这些资源的整个过程**就称为会话；当后发出的请求需要前一个请求返回的数据或者状态时（比如访问管理个人信息，就需要先发起登录请求），之前的请求就会与服务器建立一个会话，服务器会生成一个sessionId并返回，当客户端再次请求时，就会携带这个id到请求头，以便服务器识别用户状态。
@@ -108,63 +110,63 @@
 
       ​	最明显的是**Cookie在客户端，session在服务端**，session的传递依附于cookie；两者都有时效性，过期失效；**Session比cookie更安全，存储的数据更丰富也更大，cookie只能存字符串**；
 
-5. 
-
 6. 服务器渲染技术Jsp
 
-   1. Jsp 全称Java Server Page；它的出现就是为了解决servlet不方便实现动态页面；
+   1. Jsp 全称Java Server Page；
 
-      1. 基本原理：
+   2. 它的出现就是为了解决servlet不方便实现动态页面；
 
-         当jsp文件被访问时，tomcat会解析jsp，将jsp文件编译成.class文件和.java文件（这个文件在tomcat目录的work目录文件下）；打开.class字节码文件可以看到，生成的文件继承自HttpJspBese，打开该类类图，继承HttpServlet并实现了接口HttpJspPage；
+   3. 基本原理：
 
-         ![image-20231013123657275](Image/image-20231013123657275-1697171822691-1-1697171825795-3.png)
+      当jsp文件被访问时，tomcat会解析jsp，将jsp文件编译成.class文件和.java文件（这个文件在tomcat目录的work目录文件下）；打开.class字节码文件可以看到，生成的文件继承自HttpJspBese，打开该类类图，继承HttpServlet并实现了接口HttpJspPage；
 
-         <img src="Image/image-20231013123952081-1697171995332-5-1697171999166-7.png" alt="image-20231013123952081" style="zoom: 60%;" />
+      ![image-20231013123657275](Image/image-20231013123657275-1697171822691-1-1697171825795-3.png)
 
-         也就是jsp实质上就是一个servlet程序；查看sevce()方法的实现可以看到，它也就是将html文件写入到respone中，并使用一些特有占位符，添加数据；
+      <img src="Image/image-20231013123952081-1697171995332-5-1697171999166-7.png" alt="image-20231013123952081" style="zoom: 60%;" />
 
-         ![image-20231013124307272](Image/image-20231013124307272-1697172210690-9.png)
+      也就是jsp实质上就是一个servlet程序；查看sevce()方法的实现可以看到，它也就是将html文件写入到respone中，并使用一些特有占位符，添加数据；
 
+      ![image-20231013124307272](Image/image-20231013124307272-1697172210690-9.png)
 
-      2. 书写格式
+   4. 书写格式
 
-         1. ```jsp
-                  //有三种书写格式
-            //1. <% java代码 %>  代码脚本片段
-            
-            //2. <%=java代码%> 这个会把=后面的运行结果直接在浏览器页面显示出来 与		 out.print()或out.write()作用相同
-            
-            //3. <%@指令名 属性1=属性值1 属性2=属性值2 ....%> 这个是jsp指令,三个常用指令 <%@ page %> ，<%@ include %> ，| <%@ taglib %>
-            
-            //4. <%! %> 声明成员变量，方法，静态代码块，内部类 
-            
-            //演示
-            <body>
-                <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-                //设置页面的属性
-                <%
-                    String method = request.getMethod();
-                    out.println("页面的请求方法为:"+method);
-                %> //获取请求方法，并输出页面
-                <%=request.getMethod()%> //获取请求方法，并输出页面
-            </body>
-            ```
+      ```jsp
+           /有三种书写格式
+              //1. <% java代码 %>  代码脚本片段
+              
+              //2. <%=java代码%> 这个会把=后面的运行结果直接在浏览器页面显示出来 与		 out.print()或out.write()作用相同
+              
+              //3. <%@指令名 属性1=属性值1 属性2=属性值2 ....%> 这个是jsp指令,三个常用指令 <%@ page %> ，<%@ include %> ，| <%@ taglib %>
+              
+              //4. <%! %> 声明成员变量，方法，静态代码块，内部类 
+              
+              //演示
+              <body>
+                  <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+                  //设置页面的属性
+                  <%
+                      String method = request.getMethod();
+                      out.println("页面的请求方法为:"+method);
+                  %> //获取请求方法，并输出页面
+                  <%=request.getMethod()%> //获取请求方法，并输出页面
+              </body>
+      ```
 
-      3. Jsp九个预置对象
+   5. Jsp九个预置对象
 
          大部分的预置对象都来自于servlet
 
          示意图：
          <img src="Image/image-20231013165432064-1697187276441-11.png" alt="image-20231013165432064" style="zoom:50%;" />
 
-      4. Jsp四个域对象
-         域对象：在某个作用范围内的对象，主要是为了实现数据存取；
-         **pageContext**（当前页面有效），**session域对象**（当前会话期间有效），**application**（整个web应用程序运行期间有效，类似于servletContext），**request**（一次请求内有效）；
+   6. Jsp四个域对象
+        域对象：在某个作用范围内的对象，主要是为了实现数据存取；
+        **pageContext**（当前页面有效），**session域对象**（当前会话期间有效），**application**（整个web应用程序运行期间有效，类似于servletContext），**request**（一次请求内有效）；
 
-      5. 特别说明：Jsp文件不可以直接被浏览器解析，需要通过tomcat解析生成.class字节码和.java文件；
+   7. 特别说明：Jsp文件不可以直接被浏览器解析，需要通过tomcat解析生成.class字节码和.java文件；
 
-      6. 参考：[JSP入门-CSDN博客](https://blog.csdn.net/weixin_45905210/article/details/121483729)
+   8. 参考：[JSP入门-CSDN博客](https://blog.csdn.net/weixin_45905210/article/details/121483729)
+
 
    2. EL和JSTP
 
@@ -200,7 +202,7 @@
           <c:set scope="request" var="name" value="李大锤"></c:set>
          ```
 
-7. JavaWeb监听技术
+   3. JavaWeb监听技术
 
    1. 事件监听：对目标（事件源）进行的某个操作产生的事件进行监听（监听器）；
 
@@ -226,7 +228,56 @@
       </listener>
       ```
 
-      
+   4. Filter 过滤技术
+
+      1. **背景**：它的出现是为了防止用户访问没有权限的资源；就比如客户没有登录，却像访问个人管理界面；虽然在对应的servlet可以加上判断（比如session），如果页面增多，就需要写重复验证，就比如验证用户登录，在managerServlet，operationServlet，selectUserServlet...这些servlet都需要添加一个验证；而Filter过滤技术就可以很巧妙的实现这个验证；
+
+      2. **过滤过程**：客户端发起请求，tomcat解析请求，根据url判断是否有增加 filter，如果有，则调用doFilter(req,resp)，在doFilter方法里面进行检验，如果验证成功，则filterChain.dofilter放行，反之不调用；
+
+      3. 创建流程：
+      tomcat通过web.xml创建filter实列并放入容器维护，整个web只有一个该filter实列；在filter创建调用init方法，并创建一个FilterConfig对象，这里可以对filter进行配置；每当一个request发起时，tomcat就会根据url-parrten 获取指定的filter；这时调用filter.doFilter(req，resp)方法，在这个方法内进行过滤要求；放行则调用filterChain.doFilter(req，resp)；放行后这里的req和resp将继续传递到指定servlet；
+
+      4. 具体实现，需要实现servlet.Filter接口，并在web.xml中添加过滤规范；
+      代码演示：
+
+      ```xml
+      ##web.xml中配置
+      <filter>
+          //指定过滤器类(这个类必须实现filter接口)
+          <filter-name>ManagerFilter</filter-name>
+          <filter-class>com.ldc.filter.ManagerFilter</filter-class>
+      </filter>
+      <filter-mapping>
+          <filter-name>ManagerFilter</filter-name>
+          <url-pattern>/manager/*</url-pattern>
+          //和servlet基本上一样的配置
+          //url-pattern 这个是filter 过滤的规则 只要url匹配就会触发过滤
+          // 如：/manager/manager.jsp ; /manager/image/hsp.jsp ;
+      </filter-mapping>
+      ```
+
+      ManagerFilter类
+
+      ```java
+      public class ManagerFilter implements Filter {
+        @Override
+        public void init(FilterConfig filterConfig) throws ServletException {
+            Filter.super.init(filterConfig);
+            //filter的生命周期随servlet
+        }
+        @Override
+        public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+            //过滤逻辑
+            filterChain.doFilter(servletRequest, servletResponse);
+            //只有调用这个方法 才是放行
+        }
+        @Override
+        public void destroy() {
+            Filter.super.destroy();
+        }
+      ```
+
+      5. 特别说明：**请求转发不会触发过滤器；过滤器只负责过滤，不关心资源是否存在；**
 
 
 
