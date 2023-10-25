@@ -301,13 +301,124 @@ Java基础
    2. 定义特点以及作用
 
       1. 【定义，特点】**其根本就是继承，只是更用{ }来对该子类进行实列化**，没有具体名字，可以不用使用new来创建实例，且只能创建一次示例（因为没有具体类名）的类；很明显，单纯看定义就可以看出匿名内部类是一个**无名，只可以创建一次示例（不可以使用new创建实列）**，它也可以访问外部类属性；
-      2. 【作用】：**它的存在就是为了方便对于某些只需要使用一次的类/接口对象实列**（就比如Running，Callable ，他们在一次线程人任务结束之后就被释放了），**以及protected修饰的构造函数创建对象**（被protected修饰后就不能再别的包中实例化该类，而使用匿名内部类就很巧妙的避开了这个问题，新的内部类可以直接通过super() 实例化父类）；
+      2. 【作用】：**它的存在就是为了方便对于某些只需要使用一次的类/接口对象实列**（就比如Running，Callable ，他们在一次线程人任务结束之后就被释放了），**以及protected修饰的构造函数创建对象**（被protected修饰后就不能再别的包中实例化该类，而使用匿名内部类就可以通过继承很巧妙的避开了这个问题，新的内部类可以直接通过super() 实例化父类）；
 
    3. 规则
 
       1. 如果内部类想访问外部类所有成员，访问的属性必须用final修饰【jdk1.8没有也可以访问】；
       2. 还有一个属性屏蔽，如果内部类存在与外部类相同名称成员变量，如无特殊指定，优先使用内部类变量；
 
-   
+7. # Java JDBC
 
-   
+   1. Java DataBase Connectity【Java数据库连接语言】；**本质上就是一个连接数据库接口**；各种数据库远离不一致，它的出现是为了方便Java连接各种数据库；
+
+   2. 基本过程：创建JDBC对象，并注册数据库驱动（每个数据库驱动不一样，也就是一个jar包）；程序进程与数据库建立连接；执行SQL语句；返回结果集；
+
+   3. JDBC api（这些都是由各数据库厂商实现）
+
+      1. Driver ：这是一个驱动类，用来加载指定数据库驱动jar包；
+
+      2. DriverManager：它和Driver配合使用，可以注册驱动；
+
+      3. Connection：这是程序进程与数据库连接池的连接对象；
+
+      4. Statement / PrepareStatement（这是一个预处理对象）：这是一个执行SQL语句的对象，由connection对象提供；
+
+      5. ResultSet：这是执行后的结果集；
+
+   4. ```java
+      Driver driver = new com.mysql.jdbc.Driver();
+      DriverManager.registerDriver(driver);
+      //注册驱动
+      //还有一种方法 就是直接反射 Class 						driverClas=Class.forName("com.mysql.jdbc.Driver");
+      //Driver dervier=(Driver)drvierClas.newInstance();
+      
+      //另外一钟 也是直接反射
+      //Class.forName("com.mysql.jdbc.Driver");
+      //driver会自动注册
+      Connection root = DriverManager.getConnection("jdbc:mysql://localhost:3306/s3?useSSL=false", "root", "200289");
+      //java进程与数据库进程建立连接
+      Statement statement = root.createStatement();
+      //创建一个sql执行对象
+      
+      //这是另一钟方法 再后面添加? 可以防止sql注入
+      // String sql="select *from users where UserName=?";
+      // PreparedStatement preparedStatement= connection.prepareStatement(sql);
+      // setString(占位符索引,占位符的值)
+      // preparedStatement.setString(1,"lidachui");
+      ResultSet resultSet = statement.
+              executeQuery("select *from users where UserName='lidachui' and Password='200289'");
+      //执行sql并返回一个数据集
+      resultSet.next();
+      //当前数据集指向表头，需要next()下移;同时它也会返回一个boolean 判断数据集是否还是有数据；
+      Object userName = resultSet.getObject("UserName");
+      ```
+
+8. ##  SQL Sever事务
+
+   1. 定义：**一个数据库操作序列；一个不可分割的工作单位；恢复和并发控制的基本单位**；（就比如A向B转账，对于银行就是一个数据库操作过程，在这个过程，A账户扣除，B账户增加；而对于事务，这两个过程必须都完成任何一个失败，事务回滚，需要重新发起）
+
+   2. 通过关键字begin可以开启一个事务，commit关键字可以提交数据，这个时候数据就无法再回滚了；
+
+   3. 特性【它的特性和java多线程安全特性很类似】：
+      原子性，一致性， 隔离性，持续性；
+
+   4. 管理事物的关键字
+
+      1. 开始事务：BEGIN TRANSACTION
+      2. 提交事务：COMMIT TRANSACTION
+      3. 回滚（撤销）事务：ROLLBACK TRANSACTION
+      4. 存储点语句：SAVE TRANSACTION
+
+   5. 参考链接：[SQL Server中的事务（附有实例）_sql server事务-CSDN博客](https://blog.csdn.net/legendaryhaha/article/details/80550180)
+
+   6. 事务演示，这里模拟转账效果
+
+      1. ```java
+                  //通过配置文件来获取信息
+         String sql1="update users set UserName=?,Password=? where UserName=?";
+         String sql2="update users set UserName=?,Password=? where UserName=?";
+                  Properties properties = new Properties();
+                  properties.load(new FileInputStream("org/example/properties.property"));
+                  String url = properties.getProperty("url");
+                  String user = properties.getProperty("user");
+                  String pwd = properties.getProperty("pwd");
+                  //加载驱动
+                  Class.forName("com.mysql.jdbc.Driver");
+                  connection = DriverManager
+                          .getConnection(url, user, pwd);
+                  //关闭事务的默认提交 jdbc默认执行完一条语句后 直接提交
+                  //这里开启一个事务
+                  connection.setAutoCommit(false);
+                  statement= connection.prepareStatement(sql1);
+                  statement.setString(1,"lidachui");
+                  statement.setString(2,"200289");
+                  //这是事务的另一部分 两者不可分割
+                  statement= connection.prepareStatement(sql2);
+                  statement.executeUpdate();
+                  //如果都执行完成 提交事务
+                  connection.commit();
+              }  catch (SQLException e) {
+                  throw new RuntimeException(e);
+              } finally {
+                  if(statement!=null){
+                      try {
+                          //发生异常 事务回滚 将原先操作返回
+                          connection.rollback();
+                          statement.close();
+                          connection.close();
+                      } catch (SQLException e) {
+                          throw new RuntimeException(e);
+                      }
+                  }
+              }
+         ```
+
+   7. 数据库连接池
+
+      1. 【背景】每一次的数据库连接都会占用大量的系统资源，甚至导致服务器崩溃，同时每次建立连接都会消耗大量时间；
+      2. 基本原理：预先再缓冲池中放入一些连接，需要的时候申请，不需要的时候**释放连接引用**，并**放回连接池**；这里的连接可以**重复使用**，而**不是重新建立一个新的连接**，**当请求数超过连接池最大次数时，这些请求会加入到等待队列中**；
+      3. 具体表现：java使用javax.sql.Datasource来表示；
+         常用的数据库连接池：C3P0，Druid
+
+      
