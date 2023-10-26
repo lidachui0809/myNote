@@ -417,8 +417,52 @@ Java基础
    7. 数据库连接池
 
       1. 【背景】每一次的数据库连接都会占用大量的系统资源，甚至导致服务器崩溃，同时每次建立连接都会消耗大量时间；
+
       2. 基本原理：预先再缓冲池中放入一些连接，需要的时候申请，不需要的时候**释放连接引用**，并**放回连接池**；这里的连接可以**重复使用**，而**不是重新建立一个新的连接**，**当请求数超过连接池最大次数时，这些请求会加入到等待队列中**；
-      3. 具体表现：java使用javax.sql.Datasource来表示；
-         常用的数据库连接池：C3P0，Druid
+
+      3. 具体表现：java使用javax.sql.Datasource接口来表示；
+         常用的数据库连接池：**C3P0，Druid**；
+
+      4. 参考代码：
+
+         ```java
+         ##//C3p0数据库连接池    
+         Properties properties = new Properties();
+             properties.load(new FileInputStream("src/main/java/org/example/c3p0_config.properties"));
+             String user = properties.getProperty("user");
+             String pwd = properties.getProperty("pwd");
+             String url = properties.getProperty("url");
+             String driver = properties.getProperty("driver");
+         //如果有c3p0-config.xml 可以直接创建对象后 获取连接 
+         //这个文件需要放入rescources文件夹中
+         // 再xml文件中指定 <named-config name="mysql"> 属性值
+         // 然后再创建对象时传入name
+           ComboPooledDataSource comboPooledDataSource = new ComboPooledDataSource("mysql");
+             comboPooledDataSource.setUser(user);
+             comboPooledDataSource.setDriverClass(driver);
+             comboPooledDataSource.setPassword(pwd);
+             comboPooledDataSource.setJdbcUrl(url);
+         //设置连接池连接数
+             comboPooledDataSource.setInitialPoolSize(10);
+         //设置最大连接数 超过请求进入等待队列
+             comboPooledDataSource.setMaxPoolSize(50);
+           Connection connection = comboPooledDataSource.getConnection();
+           System.out.println(connection!=null?"连接成功":"连接失败");
+         
+         
+         ##//Druid数据库连接池
+             Properties properties = new Properties();
+         //这个连接池可以自己创建一个配置文件 也可以自己设置 基本步骤和上述一样
+         properties.load(new FileInputStream("src/druid.properties"));
+         DruidDataSource druidDataSource = new DruidDataSource();
+         druidDataSource.setConnectProperties(properties);
+         DataSource dataSource = DruidDataSourceFactory.createDataSource(properties);
+         Connection connection1 = dataSource.getConnection();
+         System.out.println("connect:"+connection1);
+         ```
+
+      5. 两者说明
+
+         1. Druid的操作性能会比C3p0更好，实际开发也更推荐使用Druid;
 
       
