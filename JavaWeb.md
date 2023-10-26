@@ -148,23 +148,24 @@
                       String method = request.getMethod();
                       out.println("页面的请求方法为:"+method);
                   %> //获取请求方法，并输出页面
+                  
                   <%=request.getMethod()%> //获取请求方法，并输出页面
               </body>
       ```
-
+   
    5. Jsp九个预置对象
-
+   
          大部分的预置对象都来自于servlet
-
+   
          示意图：
          <img src="Image/image-20231013165432064-1697187276441-11.png" alt="image-20231013165432064" style="zoom:50%;" />
-
+   
    6. Jsp四个域对象
         域对象：在某个作用范围内的对象，主要是为了实现数据存取；
         **pageContext**（当前页面有效），**session域对象**（当前会话期间有效），**application**（整个web应用程序运行期间有效，类似于servletContext），**request**（一次请求内有效）；
-
+   
    7. 特别说明：Jsp文件不可以直接被浏览器解析，需要通过tomcat解析生成.class字节码和.java文件；
-
+   
    8. 参考：[JSP入门-CSDN博客](https://blog.csdn.net/weixin_45905210/article/details/121483729)
 
 
@@ -204,11 +205,11 @@
 
    3. JavaWeb监听技术
 
-   1. 事件监听：对目标（事件源）进行的某个操作产生的事件进行监听（监听器）；
+   4. 事件监听：对目标（事件源）进行的某个操作产生的事件进行监听（监听器）；
 
-   2. 基本原理：目标持有并绑定监听器，在监听事件处 调用监听器的api触发事件；
+   5. 基本原理：目标持有并绑定监听器，在监听事件处 调用监听器的api触发事件；
 
-   3. JavaWeb常见的三个监听器
+   6. JavaWeb常见的三个监听器
 
       ```java
       HttpSessionListener;//这个监听session的创建与销毁
@@ -228,7 +229,7 @@
       </listener>
       ```
 
-   4. Filter 过滤技术
+   7. Filter 过滤技术
 
       1. **背景**：它的出现是为了防止用户访问没有权限的资源；就比如客户没有登录，却像访问个人管理界面；虽然在对应的servlet可以加上判断（比如session），如果页面增多，就需要写重复验证，就比如验证用户登录，在managerServlet，operationServlet，selectUserServlet...这些servlet都需要添加一个验证；而Filter过滤技术就可以很巧妙的实现这个验证；
 
@@ -278,6 +279,78 @@
       ```
 
       5. 特别说明：**请求转发不会触发过滤器；过滤器只负责过滤，不关心资源是否存在；**
+
+   8. ## Ajax
+
+
+         1. Js-Ajax
+
+
+               1. JS的 ajax 主要是依赖于XMLHttpRequest对象进行网络请求；这个对象实现了异步网络请求；常用api是 **open( *method*, url, 是否异步)** : 开启请求，**send( string)** ：添加请求体data ；send方法用于发送数据【**仅用于post添加数据到请求体中**】；**setRequestHeader(atrr，val)** ；这个对象有一个onreadystatechange 事件，随时监听请求的变化；xhr有readyState属性，它记录了请求的整个变化过程（0-4 ：0表示数据发送，3表示服务器接收，4表示请求成功），还有一个status，这个是http协议里的响应码；
+
+               2. JQuery的ajax本质是对上述的封装；有一个$.ajax( opation )，和三个高度封装的方法 $.get()，$.post()，$.getJson() ；
+
+               3. 示例
+
+                  ```js
+                  // ## Jquery -ajax 
+                  // $.ajax({
+                  //		参数:val,
+                  //		参数:val, 
+                  //		beforesend:function(...){},	
+                  //		success:function(...){},
+                  //		error:function(...){},
+                  //	})
+                  $.ajax({
+                      url:"/ajax/login",
+                      type:"post",
+                      // 这个是要求服务器返回数得数据格式
+                      dataType:"json",
+                      //返回的数据data
+                      data:{
+                          id:0,
+                          name:$("#name").val(),
+                          pwd:$("#pwd").val()
+                      },
+                      // (resp,状态码,含xmlRequest的jq对象)
+                      success:function (response,status,xhr){
+                          console.log("response:",response);
+                          console.log("status:",status);
+                          console.log("xhr:",xhr);
+                      },
+                      error:function (response,status,xhr){
+                          console.log("response",response);
+                          console.log("status",status);
+                          console.log("xhr",xhr);
+                      }
+                  })
+                  
+                  // ## JS -ajax 
+                  function a(){
+                  const xmlHttpRequest = new XMLHttpRequest();
+                  xmlHttpRequest.open("post","/ajax/login");
+                  let $input = $("input[type=text]");
+                  let name = $input.eq(0).val();
+                  let pwd = $input.eq(1).val();
+                   //这里要设置请求头  application/x-www-form-urlencoded 以表单形式发送 不然服务端解析不出来;
+                  xmlHttpRequest.setRequestHeader("Content-Type","application/x-www-form-urlencoded;charset=utf-8");
+                  xmlHttpRequest.send("name="+name+"&pwd="+pwd);
+                  xmlHttpRequest.onreadystatechange=function (){
+                      if(xmlHttpRequest.readyState==4&&xmlHttpRequest.status==200){
+                          console.log("data",xmlHttpRequest);
+                          alert("请求成功！"+xmlHttpRequest.response);
+                          let $p = $("<p></p>");
+                          $p.appendTo($("body"));
+                          $p.text("返回的值:"+xmlHttpRequest.responseText);
+                      }else {
+                          console.log("data",xmlHttpRequest);
+                          $("#resp").text("");
+                      }
+                  }
+                  ```
+
+                  
+
 
 
 

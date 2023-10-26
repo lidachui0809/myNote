@@ -454,8 +454,9 @@ Java基础
              Properties properties = new Properties();
          //这个连接池可以自己创建一个配置文件 也可以自己设置 基本步骤和上述一样
          properties.load(new FileInputStream("src/druid.properties"));
-         DruidDataSource druidDataSource = new DruidDataSource();
-         druidDataSource.setConnectProperties(properties);
+         //创建一个指定参数的数据库连接池
+         // DruidDataSource druidDataSource = new DruidDataSource();
+         // druidDataSource.setConnectProperties(properties);
          DataSource dataSource = DruidDataSourceFactory.createDataSource(properties);
          Connection connection1 = dataSource.getConnection();
          System.out.println("connect:"+connection1);
